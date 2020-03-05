@@ -3,7 +3,7 @@
 # \file run_fsi_primal.py
 # \brief Python script to run FSI cases using SU2 native flow and FEA solvers
 # \author Ruben Sanchez
-# \version 7.0.2 "Blackbird"
+# \version 7.0.3 "Blackbird"
 #
 # SU2 Project Website: https://su2code.github.io
 #
