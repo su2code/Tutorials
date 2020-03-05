@@ -66,17 +66,17 @@ def main():
   comm.Barrier()
     
   # Initialize the flow source term
-  fea_sensitivities=[]
+  fea_sens=[]
   for iVertex in range(nVertex_Marker_Flow):
-    fea_sensitivities.append([0.0, 0.0, 0.0])
+    fea_sens.append([0.0, 0.0, 0.0])
     
   for i in range(15):
 
     # Set the source term from the flow sensitivities into the structural adjoint
-    FlowDriver.SetFlowLoad_Adjoint(FlowMarkerID, 0, fea_sensitivities[1][0], fea_sensitivities[1][1], fea_sensitivities[1][2])
-    FlowDriver.SetFlowLoad_Adjoint(FlowMarkerID, 1, fea_sensitivities[0][0], fea_sensitivities[0][1], fea_sensitivities[0][2])     
-    for iVertex in range(2, nVertex_Marker_Flow):
-      FlowDriver.SetFlowLoad_Adjoint(FlowMarkerID,iVertex,fea_sensitivities[iVertex][0],fea_sensitivities[iVertex][1],fea_sensitivities[iVertex][2])
+    FlowDriver.SetFlowLoad_Adjoint(FlowMarkerID,0,fea_sens[1][0],fea_sens[1][1],0)
+    FlowDriver.SetFlowLoad_Adjoint(FlowMarkerID,1,fea_sens[0][0],fea_sens[0][1],0)
+    for j in range(2, nVertex_Marker_Flow):
+      FlowDriver.SetFlowLoad_Adjoint(FlowMarkerID,j,fea_sens[j][0],fea_sens[j][1],0)
   
     # Time iteration preprocessing
     FlowDriver.ResetConvergence()
@@ -88,27 +88,27 @@ def main():
     
     # Recover the flow loads
     flow_loads=[]
-    for iVertex in range(nVertex_Marker_Flow):
-      vertexLoad = FlowDriver.GetFlowLoad(FlowMarkerID, iVertex)
+    for j in range(nVertex_Marker_Flow):
+      vertexLoad = FlowDriver.GetFlowLoad(FlowMarkerID,j)
       flow_loads.append(vertexLoad)
     
     # Set the FEA loads to run the primal simulation for the recording
-    FEADriver.SetFEA_Loads(FEAMarkerID, 0, flow_loads[1][0], flow_loads[1][1], flow_loads[1][2])
-    FEADriver.SetFEA_Loads(FEAMarkerID, 1, flow_loads[0][0], flow_loads[0][1], flow_loads[0][2]) 
-    for iVertex in range(2, nVertex_Marker_FEA):
-      FEADriver.SetFEA_Loads(FEAMarkerID, iVertex, flow_loads[iVertex][0], flow_loads[iVertex][1], flow_loads[iVertex][2])
+    FEADriver.SetFEA_Loads(FEAMarkerID,0,flow_loads[1][0],flow_loads[1][1],0)
+    FEADriver.SetFEA_Loads(FEAMarkerID,1,flow_loads[0][0],flow_loads[0][1],0)
+    for j in range(2, nVertex_Marker_FEA):
+      FEADriver.SetFEA_Loads(FEAMarkerID,j,flow_loads[j][0],flow_loads[j][1],0)
     
     # Recover the flow sensitivities
-    flow_sensitivities=[]
-    for iVertex in range(nVertex_Marker_Flow):
-      sensX, sensY, sensZ = FlowDriver.GetMeshDisp_Sensitivity(FlowMarkerID, iVertex)
-      flow_sensitivities.append([sensX, sensY, sensZ])
+    flow_sens=[]
+    for j in range(nVertex_Marker_Flow):
+      sensX, sensY, sensZ = FlowDriver.GetMeshDisp_Sensitivity(FlowMarkerID,j)
+      flow_sens.append([sensX, sensY, sensZ])
       
     # Set the source term from the flow sensitivities into the structural adjoint
-    FEADriver.SetSourceTerm_DispAdjoint(FEAMarkerID,0,flow_sensitivities[1][0],flow_sensitivities[1][1],flow_sensitivities[1][2])        
-    FEADriver.SetSourceTerm_DispAdjoint(FEAMarkerID,1,flow_sensitivities[0][0],flow_sensitivities[0][1],flow_sensitivities[0][2])        
-    for iVertex in range(nVertex_Marker_FEA):
-      FEADriver.SetSourceTerm_DispAdjoint(FEAMarkerID,iVertex,flow_sensitivities[iVertex][0],flow_sensitivities[iVertex][1],flow_sensitivities[iVertex][2])        
+    FEADriver.SetSourceTerm_DispAdjoint(FEAMarkerID,0,flow_sens[1][0],flow_sens[1][1],0)
+    FEADriver.SetSourceTerm_DispAdjoint(FEAMarkerID,1,flow_sens[0][0],flow_sens[0][1],0)
+    for j in range(nVertex_Marker_FEA):
+      FEADriver.SetSourceTerm_DispAdjoint(FEAMarkerID,j,flow_sens[j][0],flow_sens[j][1],0)
     
     FEADriver.ResetConvergence()
     FEADriver.Preprocess(0)  
@@ -118,10 +118,10 @@ def main():
     stopCalc = FEADriver.Monitor(0)
     
     # Sensitivities of the marker
-    fea_sensitivities=[] 
+    fea_sens=[]
     for iVertex in range(nVertex_Marker_FEA):
       sensX, sensY, sensZ = FEADriver.GetFlowLoad_Sensitivity(FEAMarkerID, iVertex)
-      fea_sensitivities.append([sensX, sensY, sensZ])
+      fea_sens.append([sensX, sensY, sensZ])
   
   # Output the solution to file
   FlowDriver.Output(0)

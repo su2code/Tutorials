@@ -77,17 +77,17 @@ def main():
     
     # Recover the flow loads
     flow_loads=[]
-    for iVertex in range(nVertex_Marker_Flow):
-      vertexLoad = FlowDriver.GetFlowLoad(FlowMarkerID, iVertex)
+    for j in range(nVertex_Marker_Flow):
+      vertexLoad = FlowDriver.GetFlowLoad(FlowMarkerID, j)
       flow_loads.append(vertexLoad)
 
     # Set the flow loads to the FEA nodes (vertex IDs are matching by construction except for vertex 0 and 1)
     # To check the positions of the flow vertices use FlowDriver.GetVertexCoordX(FlowMarkerID, iVertex), FlowDriver.GetVertexCoordY(FlowMarkerID, iVertex), 
     # To check the positions of the structural vertices use FEADriver.GetVertexCoordX(FEAMarkerID, iVertex), FEADriver.GetVertexCoordY(FEAMarkerID, iVertex)
-    FEADriver.SetFEA_Loads(FEAMarkerID, 0, flow_loads[1][0], flow_loads[1][1], flow_loads[1][2])
-    FEADriver.SetFEA_Loads(FEAMarkerID, 1, flow_loads[0][0], flow_loads[0][1], flow_loads[0][2]) 
-    for iVertex in range(2, nVertex_Marker_FEA):
-      FEADriver.SetFEA_Loads(FEAMarkerID, iVertex, flow_loads[iVertex][0], flow_loads[iVertex][1], flow_loads[iVertex][2])
+    FEADriver.SetFEA_Loads(FEAMarkerID,0,flow_loads[1][0],flow_loads[1][1],0)
+    FEADriver.SetFEA_Loads(FEAMarkerID,1,flow_loads[0][0],flow_loads[0][1],0)
+    for j in range(2, nVertex_Marker_FEA):
+      FEADriver.SetFEA_Loads(FEAMarkerID,j,flow_loads[j][0],flow_loads[j][1],0)
       
     # FEA solution
     FEADriver.ResetConvergence()
@@ -98,15 +98,15 @@ def main():
     
     # Recover the structural displacements
     fea_disp=[]
-    for iVertex in range(nVertex_Marker_FEA):
-      vertexDisp = FEADriver.GetFEA_Displacements(FEAMarkerID, iVertex)
+    for j in range(nVertex_Marker_FEA):
+      vertexDisp = FEADriver.GetFEA_Displacements(FEAMarkerID,j)
       fea_disp.append(vertexDisp)
       
     # Set the structural displacements to the flow nodes (vertex IDs are matching by construction except for vertex 0 and 1)
-    FlowDriver.SetMeshDisplacement(FlowMarkerID, 0, fea_disp[1][0], fea_disp[1][1], fea_disp[1][2])
-    FlowDriver.SetMeshDisplacement(FlowMarkerID, 1, fea_disp[0][0], fea_disp[0][1], fea_disp[0][2])    
-    for iVertex in range(2, nVertex_Marker_FEA):
-      FlowDriver.SetMeshDisplacement(FlowMarkerID, iVertex, fea_disp[iVertex][0], fea_disp[iVertex][1], fea_disp[iVertex][2])
+    FlowDriver.SetMeshDisplacement(FlowMarkerID,0,fea_disp[1][0],fea_disp[1][1],0)
+    FlowDriver.SetMeshDisplacement(FlowMarkerID,1,fea_disp[0][0],fea_disp[0][1],0)
+    for j in range(2, nVertex_Marker_FEA):
+      FlowDriver.SetMeshDisplacement(FlowMarkerID,j,fea_disp[j][0],fea_disp[j][1],0)
     
   # Print out the flow and FEA solutions
   FlowDriver.Output(0)
