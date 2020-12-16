@@ -1,4 +1,6 @@
-%% \file readHistoryNodal.m
+
+% \file readHistoryNodal.m
+
 %  \brief Uses the mode shapes to obtain nodal displacements
 %  \authors Nicola Fonzi, Vittorio Cavalieri
 %  \version 7.0.8 "Blackbird"
@@ -33,7 +35,11 @@ if nargin < 5
     plot_flag = false;
 end
 
+
+% Obtain the mode shapes
 [ID,GridType,U,Ux,Uy,Uz,K,M,Uxr,Uyr,Uzr,Usp] = readPunchShapes(filename_pch);
+
+% Obtain the mode amplitudes in time
 
 nmodes = size(U,2);
 for n = 1:nmodes
@@ -48,8 +54,13 @@ i_G = unique(ID(GridType == 'G',1));
 i_S = ID(GridType == 'S',1);
 
 
-%%
+
+
 exit_flag = false;
+
+% Multiply the mode shapes for their amplitude to obtian the physical
+% coordinates in time
+
 while true
     
     if isempty(grid_id)
@@ -167,4 +178,7 @@ while true
         break
     end
 
+
 end
+
+

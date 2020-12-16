@@ -1,4 +1,4 @@
-%% \file Main_compare.m
+% \file Main_compare.m
 %  \brief Main function for SU2-Nastran postprocessing
 %  \authors Nicola Fonzi, Vittorio Cavalieri
 %  \version 7.0.8 "Blackbird"
@@ -25,8 +25,11 @@
 
 clear all; close all; clc
 
+% This script uses Theodorsen theory to compute the analytic response of
+% the profile as a function of the Mach number
 ObtainTheoResults
 
+% This script simply postprocess the results from SU2
 ObtainSU2Results
 
 save_flag = true;

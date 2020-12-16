@@ -1,4 +1,4 @@
-%% \file ObtainSU2Results.m
+% \file ObtainSU2Results.m
 %  \brief Retrives the SU2-Nastran results
 %  \authors Nicola Fonzi, Vittorio Cavalieri
 %  \version 7.0.8 "Blackbird"
@@ -27,9 +27,10 @@ Folders = {'Ma01','Ma02','Ma03','Ma0357','Ma0364'};
 Ma = [0.1,0.2,0.3,0.357,0.364];
 su2 = cell2struct(cell(4, 1),{'U','t','h','alpha'},1);
 
-plot_eig = 1;
-plot_time = 0;
-plot_fft = 0;
+
+plot_eig = 1;  % If this is set, we will create a figure with the eigenvalues as a function of Ma
+plot_time = 0; % If this is set, we will plot, per each Mach number, time histories
+plot_fft = 0;  % If this is set, we will plot the FFT per each Mach number
 
 index=1;
 for i = 1:length(Folders)
@@ -59,6 +60,11 @@ for i = 1:length(Folders)
     t = t(i0:end);
     h = h(i0:end);
     alpha = alpha(i0:end);
+
+    % This is the mode shape, in terms of rotation and displacement of the
+    % master node, at zero velocity. We use it to track the modes in the
+    % FFT and correctly compute the eigenvalues.
+
     X_h = [-0.976826465486179; -0.214032839362979];
     X_a = [0.133783443383256; -0.991010590395743];
     Fs = 1/(t(2)-t(1));
@@ -81,6 +87,11 @@ for i = 1:length(Folders)
     n = size(pks,2);
     rr_h = zeros(1,n);
     rr_a = zeros(1,n);
+
+    % After the peaks have been found in the FFT, we project everything
+    % using the mode shapes above and extract the correct frequencies for
+    % the modes
+
     for j = 1:n
         rr_h(j) = abs(X_h'*pks(:,j)) / (norm(X_h)*norm(pks(:,j)));
         rr_a(j) = abs(X_a'*pks(:,j)) / (norm(X_a)*norm(pks(:,j)));
@@ -111,4 +122,6 @@ if plot_eig
     plot(Ma,f_alpha/wa*2*pi,'o','LineWidth',2)
     hold on
     plot(Ma,f_h/wa*2*pi,'o','LineWidth',2)
+
 end
+

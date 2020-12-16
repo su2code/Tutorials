@@ -1,4 +1,6 @@
-%% \file readHistoryModal.m
+
+% \file readHistoryModal.m
+
 %  \brief Reads the StructHistoryModal.dat file
 %  \authors Nicola Fonzi, Vittorio Cavalieri
 %  \version 7.0.8 "Blackbird"
@@ -38,6 +40,10 @@ if ~islogical(display)
 end
 
 fid = fopen(filename);
+
+
+% Read the formatted file StructHistoryModal.dat. The first three columns
+% are always present. Other 3 are added per each mode
 
 formatSpec = '%f%f%f';
 for i = 1:nmodes
@@ -81,4 +87,6 @@ if display
     ylabel('$\ddot{q}$','interpreter','latex','FontSize',14);
 end
 
+
 end
+

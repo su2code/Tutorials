@@ -1,4 +1,6 @@
-%% \file readPunchShapes.m
+
+% \file readPunchShapes.m
+
 %  \brief Reads the modal shapes
 %  \authors Nicola Fonzi, Vittorio Cavalieri
 %  \version 7.0.8 "Blackbird"
@@ -26,6 +28,12 @@
 function [ID,GridType,U,Ux,Uy,Uz,K,M,Uxr,Uyr,Uzr,Usp] = readPunchShapes(filename)
 
 fid = fopen(filename);
+
+
+% Read a punch file and extract the mode shapes
+% A new mode starts with the keywords EIGENVALUE and MODE
+% Treat differently the scalar points, as they only have 1 degree of
+% freedom
 
 while ~feof(fid)
     card = fgetl(fid);
@@ -116,4 +124,7 @@ end
 
 if isp == 1
     Usp = [];
+
 end
+
+
