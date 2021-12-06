@@ -1,4 +1,4 @@
-# FADO script: Shape Optimization of CHT-case with Species Variance OF
+# FADO script: Shape Optimization with Species Variance OF
 
 from FADO import *
 

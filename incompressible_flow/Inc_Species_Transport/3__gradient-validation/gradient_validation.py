@@ -1,4 +1,4 @@
-# FADO script: Finite Differences of unsteady CHT and adjoint run
+# FADO script: Finite Differences vs adjoint run
 
 from FADO import *
 
@@ -20,9 +20,6 @@ enable_def = Parameter([""], LabelReplacer("%__DEF__"))
 
 # Switch Objective Functions
 OF_SpecVar = Parameter([""], LabelReplacer("%__OF_SpecVar__"))
-
-# Switch to Deformation specific options
-# TODO
 
 # Evaluations ---------------------------------------------------------- #
 
