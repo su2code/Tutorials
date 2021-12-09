@@ -6,7 +6,7 @@ from FADO import *
 
 nDV = 10
 ffd = InputVariable(0.0,PreStringHandler("DV_VALUE="),nDV)
-ffd = InputVariable(np.zeros((nDV,)),ArrayLabelReplacer("__FFD_PTS__"), 0, np.ones(nDV), -0.01,0.01)
+ffd = InputVariable(np.zeros((nDV,)),ArrayLabelReplacer("__FFD_PTS__"), 0, np.ones(nDV), -0.0075,0.0075)
 
 # Parameters ----------------------------------------------------------- #
 
@@ -52,6 +52,7 @@ direct = ExternalRun("DIRECT",cfd_command,True)
 direct.setMaxTries(max_tries)
 direct.addConfig(configMaster)
 direct.addData("DEFORM/mesh_out.su2",destination=meshName)
+direct.addData("solution.csv")
 direct.addExpected("restart.csv")
 direct.addParameter(enable_direct)
 direct.addParameter(enable_not_def)
@@ -110,7 +111,7 @@ driver.setStorageMode(True,"DSN_")
 # SOFT = if func eval fails, just the default val will be taken
 driver.setFailureMode("SOFT")
 
-his = open("optim.his","w",1)
+his = open("optim.csv","w",1)
 driver.setHistorian(his)
 
 # Optimization, SciPy -------------------------------------------------- #
@@ -120,7 +121,7 @@ import scipy.optimize
 driver.preprocess()
 x = driver.getInitial()
 
-options = {'disp': True, 'ftol': 1e-17, 'maxiter': 100}
+options = {'disp': True, 'ftol': 1e-10, 'maxiter': 25}
 
 optimum = scipy.optimize.minimize(driver.fun, x, method="SLSQP", jac=driver.grad,\
           constraints=driver.getConstraints(), bounds=driver.getBounds(), options=options)

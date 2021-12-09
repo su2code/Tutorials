@@ -29,4 +29,5 @@ if __name__ == '__main__':
       gradientNormVector[i] = np.nan
 
   print(gradientNormVector)
-  np.savetxt("gradient_norm.csv", gradientNormVector)
+  df = pd.DataFrame({"ITER" : range(len(DSN_folders)), "Gradient Norm" : gradientNormVector})
+  df.to_csv("gradient_norm.csv", index=False)

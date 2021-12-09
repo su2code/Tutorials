@@ -51,6 +51,7 @@ direct = ExternalRun("DIRECT",cfd_command,True)
 direct.setMaxTries(max_tries)
 direct.addConfig(configMaster)
 direct.addData("DEFORM/mesh_out.su2",destination=meshName)
+direct.addData("solution.csv")
 direct.addExpected("restart.csv")
 direct.addParameter(enable_direct)
 direct.addParameter(enable_not_def)
@@ -94,9 +95,9 @@ driver.addObjective("min", specVar)
 
 driver.setWorkingDirectory("DOE")
 driver.preprocessVariables()
-driver.setStorageMode(True,"DESIGN_")
+driver.setStorageMode(True,"DSN_")
 
-his = open("doe.his","w",1)
+his = open("doe.csv","w",1)
 driver.setHistorian(his)
 
 # Simulation Runs ------------------------------------------------------ #
@@ -105,7 +106,7 @@ driver.setHistorian(his)
 for iLoop in range(0, nDV, 1):
     print("Computing deformed primal ", iLoop, "/", nDV-1)
     x = driver.getInitial()
-    x[iLoop] = 1e-6 # DV_VALUE, FD-step
+    x[iLoop] = 1e-8 # DV_VALUE, FD-step
     driver.fun(x)
 #end
 

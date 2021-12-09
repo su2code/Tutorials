@@ -37,8 +37,8 @@ def printGradVal(FDgrad, DAgrad):
 
 if __name__ == "__main__":
 
-  # These have to match with
-  FDstep = 1e-6
+  # FDStep has to match with the value in the gradient_validation script
+  FDstep = 1e-8
 
   # Load Discrete Adjont gradient
   DAvals_specVar = pd.read_csv("DOE/DOT/of_grad.csv")
