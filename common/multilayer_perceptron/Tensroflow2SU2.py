@@ -27,7 +27,7 @@
 # License along with SU2. If not, see <http://www.gnu.org/licenses/>.
 
 import tensorflow as tf 
-import write_SU2_MLP
+from write_SU2_MLP import *
 
 # Input names for the SU2 MLP. For the CDataDrivenFluid class, these have to be "Density" and "Energy"
 MLP_input_names = ["Density", "Energy"]
