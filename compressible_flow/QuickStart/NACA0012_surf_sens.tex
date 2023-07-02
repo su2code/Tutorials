@@ -1,0 +1,85 @@
+\documentclass[tikz,margin=1pt]{standalone}
+
+%% \file NACA0012_surf_sens.tex
+%  \brief LaTeX code for the sensitivity plot in the QuickStart tutorial
+%  \author F. Poli
+%  \version 7.5.1 "Blackbird"
+%
+% SU2 Project Website: https://su2code.github.io
+%
+% The SU2 Project is maintained by the SU2 Foundation
+% (http://su2foundation.org)
+%
+% Copyright 2023, SU2 Contributors (cf. AUTHORS.md)
+%
+% SU2 is free software; you can redistribute it and/or
+% modify it under the terms of the GNU Lesser General Public
+% License as published by the Free Software Foundation; either
+% version 2.1 of the License, or (at your option) any later version.
+%
+% SU2 is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+% Lesser General Public License for more details.
+%
+% You should have received a copy of the GNU Lesser General Public
+% License along with SU2. If not, see <http://www.gnu.org/licenses/>.
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17,trig format plots=rad,tick scale binop=\times,
+ /pgf/number format/sci generic={mantissa sep=\times,exponent={10^{#1}}},
+ /pgf/number format/1000 sep={\,}}
+%\usepgfplotslibrary{groupplots}
+%\usepgfplotslibrary{patchplots}
+\usepackage{pgfplotstable}
+\begin{document}
+  \begin{tikzpicture}
+    \pagecolor{white}
+    \begin{axis}
+    [
+      title={Surface sensitivities for the NACA 0012 airfoil},
+      width=108mm,
+      height=88mm,
+      xlabel={$x/c$},
+      ylabel={surface sensitivity},
+      enlarge x limits=false,
+      %enlarge y limits=true,
+      ymin=-2,ymax=2,
+      %ymajorgrids=true,
+      legend cell align=left,
+      legend pos=south west,
+      table/col sep=comma,
+    ]
+      \addplot%+
+      [
+        blue!50!black,
+        thick,
+        mark=*,
+        mark size=0.7,
+      ]
+      table
+      [
+        x="x",
+        y="Surface_Sensitivity",
+      ]
+      {adj/surface_adjoint.csv};
+      \addlegendentry{SU2 continuous adjoint}
+      \addplot%+
+      [
+        blue!40!white,
+        thick,
+        mark=*,
+        mark size=0.7,
+      ]
+      table
+      [
+        x="x",
+        y="Surface_Sensitivity",
+      ]
+      {dadj/surface_adjoint.csv};
+      \addlegendentry{SU2 discrete adjoint}
+    \end{axis}
+  \end{tikzpicture}
+\end{document}
+
+
