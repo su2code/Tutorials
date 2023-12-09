@@ -30,7 +30,7 @@ meshName="primitiveVenturi.su2"
 
 # Note that correct SU2 version needs to be in PATH
 
-def_command = "SU2_DEF " + configMaster
+def_command = "mpirun -n " + ncores + " SU2_DEF " + configMaster
 cfd_command = "mpirun -n " + ncores + " SU2_CFD " + configMaster
 
 cfd_ad_command = "mpirun -n " + ncores + " SU2_CFD_AD " + configMaster
