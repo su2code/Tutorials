@@ -49,34 +49,49 @@ Curve Loop(1) = {1, 9, -10, 8, -7, -6, -5, -4, -3, -2};
 //+
 Plane Surface(1) = {1};
 //+
-Physical Curve("inlet", 11) = {1};
+//Physical Curve("inlet", 11) = {1};
 //+
-Physical Curve("outlet", 12) = {7};
+//Physical Curve("outlet", 12) = {7};
 //+
-Physical Curve("burner_wall", 13) = {3, 4, 5};
+//Physical Curve("burner_wall", 13) = {3, 4, 5};
 //+
-Physical Curve("cylinder_wall", 14) = {10};
+//Physical Curve("cylinder_wall", 14) = {10};
 //+
-Physical Curve("sides", 15) = {2, 9, 6, 8};
+//Physical Curve("sides", 15) = {2, 9, 6, 8};
 //+
-Physical Surface("fluid", 16) = {1};
+//Physical Surface("fluid", 16) = {1};
 //+
-Transfinite Curve {1, 7} = 40 Using Progression 1;
+Transfinite Curve {1, 7} = 30 Using Progression 1;
 //+
-Transfinite Curve {3, 5} = 40 Using Progression 1;
+Transfinite Curve {3, 5} = 30 Using Progression 1;
 //+
-Transfinite Curve {4} = 100 Using Progression 1;
+Transfinite Curve {4} = 80 Using Progression 1;
 //+
-Transfinite Curve {2} = 150 Using Progression 1;
+Transfinite Curve {2} = 100 Using Progression 1;
 //+
-Transfinite Curve {6} = 400 Using Progression 1;
+Transfinite Curve {6} = 300 Using Progression 1;
 //+
-Transfinite Curve {8} = 270 Using Progression 1;
+Transfinite Curve {8} = 200 Using Progression 1;
 //+
-Transfinite Curve {9} = 470 Using Progression 1;
+Transfinite Curve {9} = 350 Using Progression 1;
 //+
-Transfinite Curve {10} = 150 Using Progression 1;
+Transfinite Curve {10} = 100 Using Progression 1;
 
-Mesh 2;
+//Mesh 2;
 
-Save "H2_burner.su2";
+//Save "H2_burner.su2";//+
+Extrude {{1, 0, 0}, {0, -0.001, 0}, Pi/8} {
+  Surface{1}; Layers{10}; Recombine;
+}
+//+
+Physical Surface("inlet", 63) = {25};
+//+
+Physical Surface("outlet", 64) = {41};
+//+
+Physical Surface("sides", 65) = {62, 29, 61, 1, 45, 37};
+//+
+Physical Surface("burner_wall", 66) = {57, 53, 49};
+//+
+Physical Surface("cylinder_wall", 67) = {33};
+//+
+Physical Volume("fluid", 68) = {1};
