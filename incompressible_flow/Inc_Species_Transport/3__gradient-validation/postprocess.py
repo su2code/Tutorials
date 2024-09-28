@@ -49,7 +49,7 @@ if __name__ == "__main__":
   nDV = DAgrad_specVar.size
 
   # Load primal values and create FD gradient
-  FDvals = pd.read_csv("doe.his")
+  FDvals = pd.read_csv("doe.csv")
 
   FDstring_specVar = '  specVar'
 
