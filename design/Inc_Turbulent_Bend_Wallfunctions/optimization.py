@@ -15,6 +15,9 @@ print("SU2 executable obtained from ", su2_run)
 # nr of cores for mpi
 ncores="8"
 
+# total number of design iterations. 
+number_of_design_iterations = 1
+
 configMaster="sudo.cfg"
 meshName="sudo_coarse_FFD.su2"
 # inlet BC file
@@ -295,7 +298,7 @@ x = driver.getInitial()
 # disp:True prints convergence messages
 # maxiter: number of (true) design iterations that will be run 
 # ftol: precision tolerance goal for the value of f in the stopping criterion
-options = {'disp': True, 'ftol': 1e-10, 'maxiter': 5}
+options = {'disp': True, 'ftol': 1e-10, 'maxiter': number_of_design_iterations}
 
 # Use Sequential Least Squares Programming SLSQP
 optimum = scipy.optimize.minimize(driver.fun, x, method="SLSQP", jac=driver.grad,\
