@@ -134,12 +134,12 @@ restart_yes="sed -i 's/RESTART_SOL= NO/RESTART_SOL= YES/' config.cfg && cp " + c
 
 # Evaluations ---------------------------------------------------------- #
 
-def_command = "mpirun -n " + ncores + " " + su2_run + "SU2_DEF " + configCopy
-cfd_command = "mpirun -n " + ncores + " " + su2_run + "SU2_CFD " + configCopy  
-cfd_ad_command = "mpirun -n " + ncores + " " + su2_run + "SU2_CFD_AD " + configCopy 
-cfd_command = "mpirun -n " + ncores + " " + su2_run + "SU2_CFD " + configCopy  + " && cp restart.csv ../../solution.csv"
-cfd_ad_command = "mpirun -n " + ncores + " " + su2_run + "SU2_CFD_AD " + configCopy + " && cp restart_adj_" + objstring + ".csv ../../solution_adj_"+objstring+".csv"
-dot_ad_command = "mpirun -n " + ncores + " " + su2_run + "SU2_DOT_AD " + configCopy
+def_command = "mpirun --allow-run-as-root -n " + ncores + " " + su2_run + "SU2_DEF " + configCopy
+cfd_command = "mpirun --allow-run-as-root -n " + ncores + " " + su2_run + "SU2_CFD " + configCopy  
+cfd_ad_command = "mpirun --allow-run-as-root -n " + ncores + " " + su2_run + "SU2_CFD_AD " + configCopy 
+cfd_command = "mpirun --allow-run-as-root -n " + ncores + " " + su2_run + "SU2_CFD " + configCopy  + " && cp restart.csv ../../solution.csv"
+cfd_ad_command = "mpirun --allow-run-as-root -n " + ncores + " " + su2_run + "SU2_CFD_AD " + configCopy + " && cp restart_adj_" + objstring + ".csv ../../solution_adj_"+objstring+".csv"
+dot_ad_command = "mpirun --allow-run-as-root -n " + ncores + " " + su2_run + "SU2_DOT_AD " + configCopy
 
 # global iteration
 global_iter = 0
