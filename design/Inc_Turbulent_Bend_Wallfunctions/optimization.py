@@ -6,6 +6,7 @@ import glob
 import time
 import os
 import subprocess
+
 # get the path to su2 executable
 su2_run= os.environ["SU2_RUN"] + "/"
 print("SU2 executable obtained from ", su2_run)
@@ -15,12 +16,17 @@ print("SU2 executable obtained from ", su2_run)
 # nr of cores for mpi
 ncores="2"
 
+# Set to true if you want to use the restart files of previous design iterations
+# this set RESTART= NO to RESTART=YES after the first design iteration
+update_restart_file = False
+
 # total number of design iterations. 
 number_of_design_iterations = 1
 
 configMaster="sudo.cfg"
 meshName="sudo_coarse_FFD.su2"
-# inlet BC file
+
+# inlet BC file, needs to be copied
 inletName="inlet.dat"
 restartAdjName="solution_adj_dp.csv"
 
@@ -135,19 +141,21 @@ restart_yes="sed -i 's/RESTART_SOL= NO/RESTART_SOL= YES/' config.cfg && cp " + c
 # Evaluations ---------------------------------------------------------- #
 
 def_command = "mpirun --allow-run-as-root -n " + ncores + " " + su2_run + "SU2_DEF " + configCopy
-cfd_command = "mpirun --allow-run-as-root -n " + ncores + " " + su2_run + "SU2_CFD " + configCopy  
-cfd_ad_command = "mpirun --allow-run-as-root -n " + ncores + " " + su2_run + "SU2_CFD_AD " + configCopy 
-cfd_command = "mpirun --allow-run-as-root -n " + ncores + " " + su2_run + "SU2_CFD " + configCopy  + " && cp restart.csv ../../solution.csv"
-cfd_ad_command = "mpirun --allow-run-as-root -n " + ncores + " " + su2_run + "SU2_CFD_AD " + configCopy + " && cp restart_adj_" + objstring + ".csv ../../solution_adj_"+objstring+".csv"
+
+if update_restart_file = True:
+  cfd_command = "mpirun --allow-run-as-root -n " + ncores + " " + su2_run + "SU2_CFD " + configCopy  + " && cp restart.csv ../../solution.csv"
+  cfd_ad_command = "mpirun --allow-run-as-root -n " + ncores + " " + su2_run + "SU2_CFD_AD " + configCopy + " && cp restart_adj_" + objstring + ".csv ../../solution_adj_"+objstring+".csv"
+else :
+  cfd_command = "mpirun --allow-run-as-root -n " + ncores + " " + su2_run + "SU2_CFD " + configCopy  
+  cfd_ad_command = "mpirun --allow-run-as-root -n " + ncores + " " + su2_run + "SU2_CFD_AD " + configCopy 
+
 dot_ad_command = "mpirun --allow-run-as-root -n " + ncores + " " + su2_run + "SU2_DOT_AD " + configCopy
-
-# global iteration
-global_iter = 0
-
 
 max_tries = 1
 
+#####################################################################
 # mesh deformation, running in subdirectory DEFORM
+#####################################################################
 deform = ExternalRun("DEFORM",def_command,True) # True means sym links are used for addData
 deform.setMaxTries(max_tries)
 deform.addConfig(configCopy)
@@ -159,7 +167,9 @@ deform.addParameter(replace_dv_param)
 deform.addParameter(enable_def)
 deform.addParameter(enable_obj)
 
+#####################################################################
 # direct run, running in subdirectory DIRECT
+#####################################################################
 direct = ExternalRun("DIRECT",cfd_command,True)
 direct.setMaxTries(max_tries)
 direct.addConfig(configCopy)
@@ -173,7 +183,9 @@ direct.addParameter(enable_direct)
 direct.addParameter(enable_not_def)
 direct.addParameter(enable_obj)
 
+#####################################################################
 # adjoint run, running in subdorectory ADJOINT
+#####################################################################
 adjoint = ExternalRun("ADJOINT",cfd_ad_command,True)
 adjoint.setMaxTries(max_tries)
 adjoint.addConfig(configCopy)
@@ -200,7 +212,9 @@ adjoint.addParameter(enable_adjoint)
 adjoint.addParameter(enable_not_def)
 adjoint.addParameter(enable_obj)
 
+#####################################################################
 # gradient projection, running in subdirectory DOT
+#####################################################################
 dot = ExternalRun("DOT",dot_ad_command,True)
 dot.setMaxTries(max_tries)
 dot.addConfig(configCopy)
@@ -225,7 +239,9 @@ dot.addExpected("of_grad.csv")
 dot.addParameter(enable_def)
 dot.addParameter(enable_obj) # necessary for correct file extension
 
+#####################################################################
 # update restart file
+#####################################################################
 update_restart = ExternalRun("UPDATE_RESTART",restart_yes,False) # True means sym links are used for addData
 update_restart.addData(configCopy)
 
@@ -246,7 +262,8 @@ func_surfdp.addInputVariable(ffd,"DOT/of_grad.csv",TableReader(None,0,(1,0))) # 
 func_surfdp.addValueEvalStep(deform)
 func_surfdp.addValueEvalStep(direct)
 func_surfdp.addGradientEvalStep(adjoint)
-func_surfdp.addGradientEvalStep(update_restart)
+if update_restart_file == True:
+  func_surfdp.addGradientEvalStep(update_restart)
 func_surfdp.addGradientEvalStep(dot)
 func_surfdp.setDefaultValue(0.0)
 
