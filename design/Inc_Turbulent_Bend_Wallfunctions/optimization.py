@@ -21,7 +21,7 @@ ncores="2"
 update_restart_file = False
 
 # total number of design iterations. 
-number_of_design_iterations = 1
+number_of_design_iterations = 0
 
 configMaster="sudo.cfg"
 meshName="sudo_coarse_FFD.su2"
