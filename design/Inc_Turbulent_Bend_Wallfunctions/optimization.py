@@ -65,7 +65,6 @@ for i in range((DX**NDIM)*NDIM - 1):
 
 
 # ##### create string for DV_PARAM ##### #
-
 dv_param_string=""
 for idim in range(NDIM):
   xdim = ydim = zdim = "0.0"
@@ -77,7 +76,6 @@ for idim in range(NDIM):
       for i in range(DX):
         s = "( BOX, " + str(i) + ", " + str(j) + ", " + str(k) + ", " + xdim + ", " + ydim + ", " + zdim + " );"
         dv_param_string += s
-
 # remove last semicolon
 dv_param_string = dv_param_string[:-1]
 
@@ -88,7 +86,7 @@ nDV = nDV - 2*DX*DX
 ffd_string.replace(s+", ","",2*DX*DX)
 
 
-# for bottom plane (j=0 and j=1) remove the entries that have (0.0,1.0,0.0) d.o.f.
+# for bottom planes j=0 and j=1 remove the entries that have (0.0, 1.0, 0.0) d.o.f. (the vertical direction)
 jlist = [0,1]
 dof = "0.0, 1.0, 0.0"
 
@@ -142,7 +140,7 @@ restart_yes="sed -i 's/RESTART_SOL= NO/RESTART_SOL= YES/' config.cfg && cp " + c
 
 def_command = "mpirun --allow-run-as-root -n " + ncores + " " + su2_run + "SU2_DEF " + configCopy
 
-if update_restart_file = True:
+if update_restart_file == True:
   cfd_command = "mpirun --allow-run-as-root -n " + ncores + " " + su2_run + "SU2_CFD " + configCopy  + " && cp restart.csv ../../solution.csv"
   cfd_ad_command = "mpirun --allow-run-as-root -n " + ncores + " " + su2_run + "SU2_CFD_AD " + configCopy + " && cp restart_adj_" + objstring + ".csv ../../solution_adj_"+objstring+".csv"
 else :
