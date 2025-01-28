@@ -13,7 +13,7 @@ print("SU2 executable obtained from ", su2_run)
 # Some settings that depend on the case
 
 # nr of cores for mpi
-ncores="8"
+ncores="2"
 
 # total number of design iterations. 
 number_of_design_iterations = 1
