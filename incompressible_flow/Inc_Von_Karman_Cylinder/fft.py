@@ -1,20 +1,35 @@
-import pandas as pd
 #%matplotlib inline
-import numpy as np
 #import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
 import scipy.fftpack
 import csv
 
+# Return value belonging to key in config.cfg 
+# (splits key= value for you)
+def find_config_key_value(filename,config_key):
+  with open(filename, "r") as file:
+    for line in file:
+        line = line.split('=')
+        if line[0] == config_key:
+            print(line[-1].strip() )
+            return(line[-1].strip())
+  raise ValueError('key not found:',config_key)
+
 # diameter of cylinder
 D = 0.01
-# velocity
-U = 0.10
-# Number of samplepoints
-N = 2500
-# sample spacing (timestep)
-T = 0.01
 
-df = pd.read_csv('history.csv', sep='\s*,\s*', quotechar='"')
+# read history, use comma as separator, with zero or more spaces before or after 
+df = pd.read_csv('history.csv', sep='\s*,\s*')
+
+T = float(find_config_key_value('unsteady_incomp_cylinder.cfg','TIME_STEP'))
+U = find_config_key_value('unsteady_incomp_cylinder.cfg','INC_VELOCITY_INIT')
+N = len(df.index)
+print('timestep=',T)
+print('samplepoints=',N)
+print('velocity=',U)
+U = float(U.replace('(','').replace(')','').split(',')[0].strip())
+print('velocity=',U)
 
 # assign data 
 x = df['"Cur_Time"']
@@ -37,4 +52,3 @@ print("frequency of max = ",freq)
 
 St = freq * D / U
 print("strouhal number = ",St)
-
