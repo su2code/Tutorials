@@ -53,7 +53,19 @@ def WriteSU2Config(Config:Config_NICFD):
     Config.WriteSU2MLP("MLP_siloxane_MM")
 
     # SU2 config options for NICFD nozzle simulation.
-    su2_options = """               
+    su2_options = """ 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %                                                                              %
+    % SU2 configuration file, automatically generated with "3:run_SU2.py"          %
+    % Case description: Non-ideal compressible fluid flow in a converging-         %
+    %                   diverging supersonic nozzle using a PINN for thermodynamic %
+    %                   state calculations.                                        %
+    % Author: Evert Bunschoten                                                     %
+    % Institution: Delft University of Technology                                  %
+    % Date: 2025.3.26                                                              %
+    % File Version  8.1.0 "Harrier"                                                %
+    %                                                                              %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%              
     SOLVER= RANS
     KIND_TURB_MODEL= SA
     SA_OPTIONS= NONE
