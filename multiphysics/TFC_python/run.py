@@ -30,32 +30,30 @@ import pysu2
 import numpy as np
 
 # with mpi:
-# $ mpirun -n 4 python run.py
 from mpi4py import MPI
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 # without mpi:
-# $ python run.py
-#  rank = 0
 #  comm = 0
 
+Tref = 298.15
 # flame temperature of the methane-air mixture (phi=0.5, P=5)
 Tf = 1777
 
 # unburnt temperature of the methane-air mixture (phi=0.5, P=5)
 Tu = 673.0
 Pu = 5.0
-#phi = 0.5
+phi = 0.5
 # unburnt density at P=5
 rho_u = 2.52
 # unburnt thermal conductivity of methane-air (phi=0.5, P=5)
-#k_u = 0.0523
+k_u = 0.0523
 # unburnt heat capacity of methane-air (phi=0.5, P=5)
-cp_u = 1000.0
-# laminar burning velocity of methane-air at phi=0.5, P=5
-Slu = 0.232
-# Lewis number of methane-air
-Le = 1.0
+cp_u = 1350.0
+
+# P = rho*R*T
+# 5 = 2.55 * R * 673
+# R = 0.0029
 
 
 # ################################################################## #
@@ -80,7 +78,7 @@ def initC(coord):
 def SetInitialSpecies(SU2Driver):
     allCoords = SU2Driver.Coordinates()
     iSPECIESSOLVER = SU2Driver.GetSolverIndices()['SPECIES']
-    for iPoint in range(SU2Driver.GetNumberNodes()):
+    for iPoint in range(SU2Driver.GetNumberNodes() - SU2Driver.GetNumberHaloNodes()):
       coord = allCoords.Get(iPoint)
       C = initC(coord)
       # now update the initial condition for the species
@@ -96,18 +94,19 @@ def update_temperature(SU2Driver, iPoint):
     C = SU2Driver.Solution(iSPECIESSOLVER)(iPoint,0)
     T = Tu*(1-C) + Tf*C
 
+    #prim_indices = SU2Driver.GetPrimitiveIndices()
+    #iTemp = prim_indices['TEMPERATURE']
+    #SU2Driver.Primitives().Set(iPoint,iTemp, T)
+        
     iFLOWSOLVER = SU2Driver.GetSolverIndices()['INC.FLOW']
-    # the list with names
-    prim_indices = SU2Driver.GetPrimitiveIndices()
-    iTemp = prim_indices['TEMPERATURE']
-
-    SU2Driver.Primitives().Set(iPoint,iTemp, T)
+    iENTH = 3
+    SU2Driver.Solution(iFLOWSOLVER).Set(iPoint,iENTH, cp_u*(T-Tref))
 
 
 # ################################################################## #
 # Source term according to Zimont
 # ################################################################## #
-def zimont(SU2Driver, iPoint):
+def zimont(SU2Driver, iPoint, nDim):
 
     iSSTSOLVER = SU2Driver.GetSolverIndices()['SST']
     tke, dissipation = SU2Driver.Solution(iSSTSOLVER)(iPoint)
@@ -119,6 +118,9 @@ def zimont(SU2Driver, iPoint):
     iDENSITY = primindex.get("DENSITY")
     iMU = primindex.get("LAMINAR_VISCOSITY")
 
+    # laminar burning velocity of methane-air at phi=0.5, P=5
+    Slu = 0.232
+
     rho = SU2Driver.Primitives()(iPoint,iDENSITY)
     mu = SU2Driver.Primitives()(iPoint,iMU)
     nu=mu/rho
@@ -126,15 +128,29 @@ def zimont(SU2Driver, iPoint):
     up = np.sqrt((2.0/3.0) * tke )
     lt = (0.09**0.75) * (tke**1.5) / dissipation
     Re = up*lt/nu
+    Le = 1.0
     Ut = Slu * (1.0 + (0.46/Le) * np.power(Re,0.25) * np.power(up/Slu,0.3) * np.power(Pu,0.2) )
-    nDim = SU2Driver.GetNumberDimensions()
     norm_gradc = 0.0
-    for iDim in range(nDim):
-        norm_gradc += gradc[iDim]*gradc[iDim]
-    Sc = rho_u * Ut * np.sqrt(norm_gradc)
+    for idim in range(nDim):
+      norm_gradc += gradc[idim]*gradc[idim]
+    norm_gradc = np.sqrt(norm_gradc)
+    Sc = rho_u * Ut * norm_gradc
 
     return Sc
 
+# ################################################################## #
+# Get the list of solver variable names
+# ################################################################## #
+def getsolvar(SU2Driver):
+    primindex = SU2Driver.GetPrimitiveIndices()
+    iFLOWSOLVER = SU2Driver.GetSolverIndices()['INC.FLOW']
+    nVars = SU2Driver.Solution(iFLOWSOLVER).Shape()[1]
+    varindex = primindex.copy()
+    for prim in varindex.copy():
+      if varindex[prim] >=nVars:
+        del varindex[prim]
+    varindex = dict(sorted(varindex.items(), key=lambda item: item[1]))
+    return varindex
 
 # ################################################################## #
 # Main routine
@@ -201,23 +217,21 @@ def main():
   sys.stdout.flush()
 
   # run N iterations
-  N = 5000
-  for inner_iter in range(N):
+  for inner_iter in range(2000):
     if (rank==0):
       print("python iteration ", inner_iter)
+
     driver.Preprocess(inner_iter)
     driver.Run()
 
     Source = driver.UserDefinedSource(iSPECIESSOLVER)
-    #Source_h = driver.UserDefinedSource(iFLOWSOLVER)
 
     # set the source term, per point
     for i_node in range(driver.GetNumberNodes() - driver.GetNumberHaloNodes()):
       # add source term:
       # default TFC of Zimont: rho*Sc = rho_u * U_t * grad(c)
-      S = zimont(driver,i_node)
+      S = zimont(driver,i_node, nDim)
       Source.Set(i_node,0,S)
-      #Source_h.Set(i_node,3, 1.0*0.0284*50.5*1e6*S)
 
     # for the update of temperature, we need to update also the halo nodes
     for i_node in range(driver.GetNumberNodes()):
