@@ -220,7 +220,7 @@ def main():
   sys.stdout.flush()
 
   # run N iterations
-  N = 5000
+  N = 10
   for inner_iter in range(N):
     if (rank==0):
       print("python iteration ", inner_iter)
