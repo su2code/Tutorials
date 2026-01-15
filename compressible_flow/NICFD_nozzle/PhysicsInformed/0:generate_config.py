@@ -20,7 +20,7 @@
 #  Generate configuration for defining a physics-informed neural network for modeling the     | 
 #  fluid properties of siloxane MM in NICFD with the data-driven fluid model in SU2.          |
 #                                                                                             |
-# Version: 2.0.0                                                                              |
+# Version: 3.0.0                                                                              |
 #                                                                                             |
 #=============================================================================================#
 

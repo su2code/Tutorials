@@ -20,7 +20,7 @@
 #  Initate physics-informed machine learning process for training the neural network used to  |
 #  model the fluid properties of siloxane MM in NICFD with the SU2 data-driven fluid model.   |
 #                                                                                             |
-# Version: 2.0.0                                                                              |
+# Version: 3.0.0                                                                              |
 #                                                                                             |
 #=============================================================================================#
 
