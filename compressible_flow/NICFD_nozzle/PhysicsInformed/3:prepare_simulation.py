@@ -2,7 +2,7 @@
 
 ## \file 3:run_SU2.py
 #  \brief NICFD simulation of supersonic expansion of siloxane MM.
-#  \version 8.1.0 "Harrier"
+#  \version 8.3.0 "Harrier"
 #
 # SU2 Project Website: https://su2code.github.io
 #
@@ -26,9 +26,7 @@
 
 import numpy as np
 import gmsh 
-import pysu2
 import CoolProp.CoolProp as CP
-from mpi4py import MPI
 from su2dataminer.config import Config_NICFD
 
 
@@ -54,18 +52,6 @@ def WriteSU2Config(Config:Config_NICFD):
 
     # SU2 config options for NICFD nozzle simulation.
     su2_options = """ 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %                                                                              %
-    % SU2 configuration file, automatically generated with "3:run_SU2.py"          %
-    % Case description: Non-ideal compressible fluid flow in a converging-         %
-    %                   diverging supersonic nozzle using a PINN for thermodynamic %
-    %                   state calculations.                                        %
-    % Author: Evert Bunschoten                                                     %
-    % Institution: Delft University of Technology                                  %
-    % Date: 2025.3.26                                                              %
-    % File Version  8.1.0 "Harrier"                                                %
-    %                                                                              %
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%              
     SOLVER= RANS
     KIND_TURB_MODEL= SA
     SA_OPTIONS= NONE
@@ -243,26 +229,16 @@ def GenerateMesh():
 
     return mesh_filename
 
-comm = MPI.COMM_WORLD
-rank = comm.Get_rank()
+# Load SU2 DataMiner configuration.
+Config = Config_NICFD("SU2DataMiner_MM.cfg")
 
-if rank == 0:
-    # Load SU2 DataMiner configuration.
-    Config = Config_NICFD("SU2DataMiner_MM.cfg")
+# Write SU2 configuration options.
+su2_options = WriteSU2Config(Config)
 
-    # Write SU2 configuration options.
-    su2_options = WriteSU2Config(Config)
+# Generate computational mesh.
+mesh_filename = GenerateMesh()
+su2_options = su2_options.replace("__MESH_FILENAME__", mesh_filename)
 
-    # Generate computational mesh.
-    mesh_filename = GenerateMesh()
-    su2_options = su2_options.replace("__MESH_FILENAME__", mesh_filename)
-
-    # Write SU2 configuration file.
-    with open("config_NICFD_PINN.cfg", "w") as fid:
-        fid.write(su2_options)
-comm.Barrier()
-
-# Initialize NICFD simulation.
-driver = pysu2.CSinglezoneDriver("config_NICFD_PINN.cfg",1, comm)
-driver.StartSolver()
-driver.Finalize()
+# Write SU2 configuration file.
+with open("config_NICFD_PINN.cfg", "w") as fid:
+    fid.write(su2_options)
