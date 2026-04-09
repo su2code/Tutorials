@@ -7,7 +7,7 @@
 #       #                                                                            #        #
 ###############################################################################################
 
-########################### FILE NAME: 1:generate_fluid_data.py ###############################
+############################# FILE NAME: 0_generate_config.py #################################
 #=============================================================================================#
 # author: Evert Bunschoten                                                                    |
 #    :PhD Candidate ,                                                                         |
@@ -17,24 +17,28 @@
 #                                                                                             |
 #                                                                                             |
 # Description:                                                                                |
-#  Generate the single-phase fluid data for siloxane MM which is used to train the            |
-# physics-informed neural network.                                                            |
+#  Generate configuration for defining a physics-informed neural network for modeling the     | 
+#  fluid properties of siloxane MM in NICFD with the data-driven fluid model in SU2.          |
 #                                                                                             |
 # Version: 2.0.0                                                                              |
 #                                                                                             |
 #=============================================================================================#
 
 from su2dataminer.config import Config_NICFD
-from su2dataminer.generate_data import DataGenerator_CoolProp
 
-# Load SU2 DataMiner configuration.
-Config = Config_NICFD("SU2DataMiner_MM.cfg")
+# The fluid data for siloxane MM are generated with the CoolProp module using the Helmoltz
+# equation of state.
+fluid_name = "MM"
+EoS_type = "HEOS"
 
-# Initiate data generator.
-DG = DataGenerator_CoolProp(Config)
-DG.PreprocessData()
-DG.ComputeData()
+Config = Config_NICFD()
+Config.SetFluid(fluid_name)
+Config.SetEquationOfState(EoS_type)
 
-# Visualize and save fluid data.
-DG.VisualizeFluidData()
-DG.SaveData()
+# Fluid data are generated on a density-energy grid rather than pressure-temperature.
+Config.UsePTGrid(False)
+
+# Display configuration settings and save config object.
+Config.SetConfigName("SU2DataMiner_MM")
+Config.PrintBanner()
+Config.SaveConfig()
