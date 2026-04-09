@@ -7,7 +7,7 @@
 #       #                                                                            #        #
 ###############################################################################################
 
-############################# FILE NAME: 0:generate_config.py #################################
+################################ FILE NAME: 2_train_PINN.py ###################################
 #=============================================================================================#
 # author: Evert Bunschoten                                                                    |
 #    :PhD Candidate ,                                                                         |
@@ -17,28 +17,37 @@
 #                                                                                             |
 #                                                                                             |
 # Description:                                                                                |
-#  Generate configuration for defining a physics-informed neural network for modeling the     | 
-#  fluid properties of siloxane MM in NICFD with the data-driven fluid model in SU2.          |
+#  Initate physics-informed machine learning process for training the neural network used to  |
+#  model the fluid properties of siloxane MM in NICFD with the SU2 data-driven fluid model.   |
 #                                                                                             |
 # Version: 2.0.0                                                                              |
 #                                                                                             |
 #=============================================================================================#
 
 from su2dataminer.config import Config_NICFD
+from su2dataminer.manifold import TrainMLP_NICFD
 
-# The fluid data for siloxane MM are generated with the CoolProp module using the Helmoltz
-# equation of state.
-fluid_name = "MM"
-EoS_type = "HEOS"
+# Load SU2 DataMiner configuration.
+Config = Config_NICFD("SU2DataMiner_MM.cfg")
 
-Config = Config_NICFD()
-Config.SetFluid(fluid_name)
-Config.SetEquationOfState(EoS_type)
+# Set learning rate parameters and define network architecture.
+Eval = TrainMLP_NICFD(Config)
 
-# Fluid data are generated on a density-energy grid rather than pressure-temperature.
-Config.UsePTGrid(False)
+# Initial learning rate: 10^-3, learning rate decay parameter: 9.8787, mini-batch size: 2^6.
+Eval.SetAlphaExpo(-3.0)
+Eval.SetLRDecay(+9.8787e-01)
+Eval.SetBatchExpo(6)
 
-# Display configuration settings and save config object.
-Config.SetConfigName("SU2DataMiner_MM")
-Config.PrintBanner()
+# Network architecture: two hidden layers with 12 nodes.
+Eval.SetHiddenLayers([12,12])
+# Hidden layer activation function: exp(x)
+Eval.SetActivationFunction("exponential")
+# Display training progress in the terminal.
+Eval.SetVerbose(1)
+
+# Initiate training process.
+Eval.CommenceTraining()
+Eval.TrainPostprocessing()
+
+Config.UpdateMLPHyperParams(Eval)
 Config.SaveConfig()

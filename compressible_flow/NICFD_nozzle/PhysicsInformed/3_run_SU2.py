@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-## \file 3:run_SU2.py
+## \file 3_run_SU2.py
 #  \brief NICFD simulation of supersonic expansion of siloxane MM.
 #  \version 8.1.0 "Harrier"
 #
@@ -56,7 +56,7 @@ def WriteSU2Config(Config:Config_NICFD):
     su2_options = """ 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %                                                                              %
-    % SU2 configuration file, automatically generated with "3:run_SU2.py"          %
+    % SU2 configuration file, automatically generated with "3_run_SU2.py"          %
     % Case description: Non-ideal compressible fluid flow in a converging-         %
     %                   diverging supersonic nozzle using a PINN for thermodynamic %
     %                   state calculations.                                        %

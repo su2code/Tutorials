@@ -1,0 +1,280 @@
+# Project Plan
+
+## Scope
+This repository contains SU2 tutorial cases for compressible flow, incompressible flow, multiphysics, design, and structural mechanics workflows. The current maintenance task is a repository portability fix: remove Windows-invalid `:` characters from tracked filenames in the NICFD nozzle Physics-Informed tutorial while keeping tutorial behavior, meshes, solver configs, and learning content unchanged.
+
+## Objectives
+- Keep the patch minimal and limited to path portability.
+- Preserve script ordering semantics for the Physics-Informed workflow.
+- Update any repository references that point to renamed files.
+- Verify that no tracked path in the repository still contains `:`.
+- Leave the repository staged but uncommitted after verification.
+
+## Assumptions
+- The affected files are tutorial helper scripts, so renaming them is behavior-neutral as long as any references are updated.
+- Script ordering is communicated primarily by the numeric filename prefix, so replacing `:` with `_` preserves intended execution order.
+- Git-based verification is the right source of truth for tracked-path portability.
+
+## Workflow
+1. Inspect tracked paths for any filename containing `:`.
+2. Confirm whether the only affected tracked paths are the four Physics-Informed NICFD nozzle scripts.
+3. Rename those files to Windows-safe names that preserve the numeric ordering.
+4. Search the full repository for literal references to the old filenames and update only those references.
+5. Run the requested verification commands:
+   - `git ls-files | grep ':' || true`
+   - `git grep -nE '0:generate_config\.py|1:generate_fluid_data\.py|2:train_PINN\.py|3:run_SU2\.py' || true`
+   - `git diff --summary`
+6. Stage the resulting changes without committing them.
+7. Record the work in `Changes.md`.
+
+## Expected Files To Touch For This Task
+- `compressible_flow/NICFD_nozzle/PhysicsInformed/0_generate_config.py` -> rename only
+- `compressible_flow/NICFD_nozzle/PhysicsInformed/1_generate_fluid_data.py` -> rename only
+- `compressible_flow/NICFD_nozzle/PhysicsInformed/2_train_PINN.py` -> rename only
+- `compressible_flow/NICFD_nozzle/PhysicsInformed/3_run_SU2.py` -> rename only
+- Any repository documentation or script that references the old names, if found
+- `Plans.md`
+- `Changes.md`
+
+## Verification Commands
+- `git ls-files | grep ':' || true`
+- `git grep -nE '0:generate_config\.py|1:generate_fluid_data\.py|2:train_PINN\.py|3:run_SU2\.py' || true`
+- `git diff --summary`
+- `git status --short`
+
+## Amendments
+- 2026-04-08: The Physics-Informed NICFD nozzle helper scripts were renamed from colon-delimited names to underscore-delimited names to remove Windows-invalid path characters while preserving execution order semantics.
+
+## Repository Structure
+The current tracked structure is listed below as relative paths.
+
+```text
+LICENSE
+README.md
+compressible_flow/ActuatorDisk_VariableLoad/ActuatorDisk.dat
+compressible_flow/ActuatorDisk_VariableLoad/propeller_variable_load.cfg
+compressible_flow/ActuatorDisk_VariableLoad/propeller_variable_load.su2
+compressible_flow/Inviscid_Bump/inv_channel.cfg
+compressible_flow/Inviscid_Bump/mesh_channel_256x128.su2
+compressible_flow/Inviscid_ONERAM6/inv_ONERAM6.cfg
+compressible_flow/Inviscid_ONERAM6/mesh_ONERAM6_inv_ffd.su2
+compressible_flow/Inviscid_Wedge/inv_wedge_HLLC.cfg
+compressible_flow/Inviscid_Wedge/mesh_wedge_inv.cgns
+compressible_flow/Laminar_Cylinder/lam_cylinder.cfg
+compressible_flow/Laminar_Cylinder/mesh_cylinder_lam.su2
+compressible_flow/Laminar_Flat_Plate/lam_flatplate.cfg
+compressible_flow/Laminar_Flat_Plate/mesh_flatplate_65x65.su2
+compressible_flow/NICFD_nozzle/DataDriven/Generate_Dataset.py
+compressible_flow/NICFD_nozzle/DataDriven/LUTWriter.m
+compressible_flow/NICFD_nozzle/DataDriven/MLPTrainer.py
+compressible_flow/NICFD_nozzle/DataDriven/MLP_Air.mlp
+compressible_flow/NICFD_nozzle/DataDriven/Tensorflow2SU2.py
+compressible_flow/NICFD_nozzle/DataDriven/datadriven_nozzle.cfg
+compressible_flow/NICFD_nozzle/DataDriven/write_SU2_MLP.py
+compressible_flow/NICFD_nozzle/NICFD_nozzle.cfg
+compressible_flow/NICFD_nozzle/NICFD_nozzle.su2
+compressible_flow/NICFD_nozzle/PhysicsInformed/0_generate_config.py
+compressible_flow/NICFD_nozzle/PhysicsInformed/1_generate_fluid_data.py
+compressible_flow/NICFD_nozzle/PhysicsInformed/2_train_PINN.py
+compressible_flow/NICFD_nozzle/PhysicsInformed/3_run_SU2.py
+compressible_flow/NICFD_nozzle/PhysicsInformed/MLP_siloxane_MM.mlp
+compressible_flow/NICFD_nozzle/PhysicsInformed/config_NICFD_PINN.cfg
+compressible_flow/NICFD_nozzle/PhysicsInformed/nozzle_curve.csv
+compressible_flow/NICFD_nozzle/PhysicsInformed/nozzle_mesh.su2
+compressible_flow/NICFD_nozzle/experimental_data.dat
+compressible_flow/QuickStart/Makefile
+compressible_flow/QuickStart/NACA0012_coef_pres.tex
+compressible_flow/QuickStart/NACA0012_surf_sens.tex
+compressible_flow/QuickStart/adj/inv_adj_NACA0012.cfg
+compressible_flow/QuickStart/dadj/inv_dadj_NACA0012.cfg
+compressible_flow/QuickStart/make_field_shots.py
+compressible_flow/Transitional_Airfoil/Langtry_and_Menter/E387/ogrid_e387.su2
+compressible_flow/Transitional_Airfoil/Langtry_and_Menter/E387/transitional_SA_LM_model_ConfigFile.cfg
+compressible_flow/Transitional_Airfoil/Langtry_and_Menter/E387/transitional_SST_LM_model_ConfigFile.cfg
+compressible_flow/Transitional_Airfoil/Langtry_and_Menter/NLF/grid.su2
+compressible_flow/Transitional_Airfoil/Langtry_and_Menter/NLF/transitional_LM_model_ConfigFile.cfg
+compressible_flow/Transitional_Flat_Plate/Langtry_and_Menter/T3A-/grid.su2
+compressible_flow/Transitional_Flat_Plate/Langtry_and_Menter/T3A-/transitional_LM_model_ConfigFile.cfg
+compressible_flow/Transitional_Flat_Plate/Langtry_and_Menter/T3A/grid.su2
+compressible_flow/Transitional_Flat_Plate/Langtry_and_Menter/T3A/transitional_LM_model_ConfigFile.cfg
+compressible_flow/Transitional_Flat_Plate/grid.su2
+compressible_flow/Transitional_Flat_Plate/transitional_BC_model_ConfigFile.cfg
+compressible_flow/Turbulent_Flat_Plate/mesh_flatplate_turb_137x97.su2
+compressible_flow/Turbulent_Flat_Plate/mesh_flatplate_turb_545x385.su2
+compressible_flow/Turbulent_Flat_Plate/turb_SA_flatplate.cfg
+compressible_flow/Turbulent_ONERAM6/mesh_ONERAM6_100k.su2
+compressible_flow/Turbulent_ONERAM6/mesh_ONERAM6_turb_hexa_43008.su2
+compressible_flow/Turbulent_ONERAM6/onera_coarse.tgz
+compressible_flow/Turbulent_ONERAM6/turb_ONERAM6.cfg
+compressible_flow/UQ_NACA0012/mesh_n0012_225-65.su2
+compressible_flow/UQ_NACA0012/turb_NACA0012_uq.cfg
+compressible_flow/UQ_NACA0012/turb_NACA0012_uq_1c.cfg
+compressible_flow/UQ_NACA0012/turb_NACA0012_uq_2c.cfg
+compressible_flow/UQ_NACA0012/turb_NACA0012_uq_3c.cfg
+compressible_flow/UQ_NACA0012/turb_NACA0012_uq_p1c1.cfg
+compressible_flow/UQ_NACA0012/turb_NACA0012_uq_p1c2.cfg
+compressible_flow/Unsteady_NACA0012/restart_flow_00497.dat
+compressible_flow/Unsteady_NACA0012/restart_flow_00498.dat
+compressible_flow/Unsteady_NACA0012/restart_flow_00499.dat
+compressible_flow/Unsteady_NACA0012/unsteady_naca0012.cfg
+compressible_flow/Unsteady_NACA0012/unsteady_naca0012_mesh.su2
+design/Inc_Turbulent_Bend_Wallfunctions/config.cfg
+design/Inc_Turbulent_Bend_Wallfunctions/inlet.dat
+design/Inc_Turbulent_Bend_Wallfunctions/optimization.py
+design/Inc_Turbulent_Bend_Wallfunctions/primal_solution.csv
+design/Inc_Turbulent_Bend_Wallfunctions/solution.csv
+design/Inc_Turbulent_Bend_Wallfunctions/solution_adj_dp.csv
+design/Inc_Turbulent_Bend_Wallfunctions/sudo.cfg
+design/Inc_Turbulent_Bend_Wallfunctions/sudo_0_add_FFD_box.cfg
+design/Inc_Turbulent_Bend_Wallfunctions/sudo_adjoint.cfg
+design/Inc_Turbulent_Bend_Wallfunctions/sudo_coarse_FFD.su2
+design/Inc_Turbulent_Bend_Wallfunctions/sudo_coarse_mergedmarkers.geo
+design/Inc_Turbulent_Bend_Wallfunctions/sudo_primal.cfg
+design/Inviscid_2D_Unconstrained_NACA0012/inv_NACA0012_basic.cfg
+design/Inviscid_2D_Unconstrained_NACA0012/mesh_NACA0012_inv.su2
+design/Inviscid_3D_Constrained_ONERAM6/inv_ONERAM6_adv.cfg
+design/Inviscid_3D_Constrained_ONERAM6/mesh_ONERAM6_inv_FFD.su2
+design/Multi_Objective_Shape_Design/inv_wedge_ROE_multiobj_combo.cfg
+design/Multi_Objective_Shape_Design/mesh_wedge_inv_FFD.su2
+design/Multi_Objective_Shape_Design/solution_adj_cd.csv
+design/Multi_Objective_Shape_Design/solution_adj_combo.csv
+design/Multi_Objective_Shape_Design/solution_adj_pt.csv
+design/Multi_Objective_Shape_Design/solution_flow.csv
+design/Species_Transport/README.md
+design/Turbulent_2D_Constrained_RAE2822/mesh_RAE2822_turb.su2
+design/Turbulent_2D_Constrained_RAE2822/solution_adj_cd.dat
+design/Turbulent_2D_Constrained_RAE2822/solution_adj_cmz.dat
+design/Turbulent_2D_Constrained_RAE2822/solution_flow.dat
+design/Turbulent_2D_Constrained_RAE2822/turb_SA_RAE2822.cfg
+design/Unsteady_Shape_Opt_NACA0012/unsteady_naca0012_FFD.su2
+design/Unsteady_Shape_Opt_NACA0012/unsteady_naca0012_opt.cfg
+incompressible_flow/Inc_Combustion/1__premixed_hydrogen/H2_burner.cfg
+incompressible_flow/Inc_Combustion/1__premixed_hydrogen/H2_burner.geo
+incompressible_flow/Inc_Combustion/1__premixed_hydrogen/H2_burner.su2
+incompressible_flow/Inc_Combustion/1__premixed_hydrogen/MLP_PD.mlp
+incompressible_flow/Inc_Combustion/1__premixed_hydrogen/MLP_PNO.mlp
+incompressible_flow/Inc_Combustion/1__premixed_hydrogen/MLP_SPV.mlp
+incompressible_flow/Inc_Combustion/1__premixed_hydrogen/MLP_TD1.mlp
+incompressible_flow/Inc_Combustion/1__premixed_hydrogen/MLP_TD2.mlp
+incompressible_flow/Inc_Combustion/1__premixed_hydrogen/MLP_null.mlp
+incompressible_flow/Inc_Combustion/1__premixed_hydrogen/solution.dat
+incompressible_flow/Inc_Inviscid_Hydrofoil/inv_naca0012.cfg
+incompressible_flow/Inc_Inviscid_Hydrofoil/mesh_NACA0012_5deg_6814.su2
+incompressible_flow/Inc_Laminar_Cavity/lam_buoyancy_cavity.cfg
+incompressible_flow/Inc_Laminar_Cavity/mesh_cavity_257x257.su2
+incompressible_flow/Inc_Laminar_Flat_Plate/lam_flatplate.cfg
+incompressible_flow/Inc_Laminar_Flat_Plate/mesh_flatplate_65x65.su2
+incompressible_flow/Inc_Laminar_Step/lam_backwardstep.cfg
+incompressible_flow/Inc_Laminar_Step/mesh_backward_step_481x65.su2
+incompressible_flow/Inc_Species_Transport/1__FFD-box-writing/mesh_out.su2
+incompressible_flow/Inc_Species_Transport/1__FFD-box-writing/species3_primitiveVenturi.cfg
+incompressible_flow/Inc_Species_Transport/2__mesh-deform-test/species3_primitiveVenturi_deform.cfg
+incompressible_flow/Inc_Species_Transport/3__gradient-validation/gradient_validation.py
+incompressible_flow/Inc_Species_Transport/3__gradient-validation/postprocess.py
+incompressible_flow/Inc_Species_Transport/3__gradient-validation/species3_primitiveVenturi.cfg
+incompressible_flow/Inc_Species_Transport/4__optimization/create_Visu_symlinks.py
+incompressible_flow/Inc_Species_Transport/4__optimization/gradient_norm.py
+incompressible_flow/Inc_Species_Transport/4__optimization/optimization.py
+incompressible_flow/Inc_Species_Transport/4__optimization/species3_primitiveVenturi.cfg
+incompressible_flow/Inc_Species_Transport/DAspecies3_primitiveVenturi.cfg
+incompressible_flow/Inc_Species_Transport/primitiveVenturi.geo
+incompressible_flow/Inc_Species_Transport/primitiveVenturi.su2
+incompressible_flow/Inc_Species_Transport/restart_validation.sh
+incompressible_flow/Inc_Species_Transport/solution.csv
+incompressible_flow/Inc_Species_Transport/species3_primitiveVenturi.cfg
+incompressible_flow/Inc_Species_Transport_Composition_Dependent_Model/Kenics_mixer_tutorial.geo
+incompressible_flow/Inc_Species_Transport_Composition_Dependent_Model/kenics.su2
+incompressible_flow/Inc_Species_Transport_Composition_Dependent_Model/kenics_mixer_tutorial.cfg
+incompressible_flow/Inc_Streamwise_Periodic/chtPinArray_2d.geo
+incompressible_flow/Inc_Streamwise_Periodic/fluid_FFD.su2
+incompressible_flow/Inc_Streamwise_Periodic/sp_pinArray_2d_dp_hf_tp.cfg
+incompressible_flow/Inc_Streamwise_Periodic/sp_pinArray_2d_mf_hf.cfg
+incompressible_flow/Inc_Transitional_Prolate_Spheroid/transitional_SA_LM_model_ConfigFile.cfg
+incompressible_flow/Inc_Transitional_Prolate_Spheroid/transitional_SST_LM2015_model_ConfigFile.cfg
+incompressible_flow/Inc_Turbulent_Bend_Wallfunctions/Tanaka_LES_vel_phi_90degrees.csv
+incompressible_flow/Inc_Turbulent_Bend_Wallfunctions/extract_contours_sudo_bend.py
+incompressible_flow/Inc_Turbulent_Bend_Wallfunctions/inlet.dat
+incompressible_flow/Inc_Turbulent_Bend_Wallfunctions/paraview_extract_linedata.py
+incompressible_flow/Inc_Turbulent_Bend_Wallfunctions/paraview_extract_slice_data.py
+incompressible_flow/Inc_Turbulent_Bend_Wallfunctions/solution.dat
+incompressible_flow/Inc_Turbulent_Bend_Wallfunctions/sudo.cfg
+incompressible_flow/Inc_Turbulent_Bend_Wallfunctions/sudo_coarse.geo
+incompressible_flow/Inc_Turbulent_Bend_Wallfunctions/sudo_coarse.su2
+incompressible_flow/Inc_Turbulent_Bend_Wallfunctions/sudo_vel_phi_90degrees.csv
+incompressible_flow/Inc_Turbulent_Flat_Plate/mesh_flatplate_turb_545x385.su2
+incompressible_flow/Inc_Turbulent_Flat_Plate/turb_flatplate.cfg
+incompressible_flow/Inc_Turbulent_NACA0012/n0012_897-257.su2
+incompressible_flow/Inc_Turbulent_NACA0012/turb_naca0012.cfg
+incompressible_flow/Inc_Von_Karman_Cylinder/cylinder_wake.geo
+incompressible_flow/Inc_Von_Karman_Cylinder/cylinder_wake.su2
+incompressible_flow/Inc_Von_Karman_Cylinder/fft.py
+incompressible_flow/Inc_Von_Karman_Cylinder/statefile_movablearrow_timeseries.pvsm
+incompressible_flow/Inc_Von_Karman_Cylinder/statefile_with_particles.pvsm
+incompressible_flow/Inc_Von_Karman_Cylinder/unsteady_incomp_cylinder.cfg
+multiphysics/contact_resistance_cht/fluid.cfg
+multiphysics/contact_resistance_cht/fluid_3.geo
+multiphysics/contact_resistance_cht/fluid_mesh.su2
+multiphysics/contact_resistance_cht/master.cfg
+multiphysics/contact_resistance_cht/solid_1.cfg
+multiphysics/contact_resistance_cht/solid_1.geo
+multiphysics/contact_resistance_cht/solid_2.cfg
+multiphysics/contact_resistance_cht/solid_2.geo
+multiphysics/contact_resistance_cht/solid_mesh_1.su2
+multiphysics/contact_resistance_cht/solid_mesh_2.su2
+multiphysics/steady_cht/cht_2d_3cylinders.cfg
+multiphysics/steady_cht/flow_cylinder.cfg
+multiphysics/steady_cht/mesh_cht_3cyl_ffd.su2
+multiphysics/steady_cht/solid_cylinder1.cfg
+multiphysics/steady_cht/solid_cylinder2.cfg
+multiphysics/steady_cht/solid_cylinder3.cfg
+multiphysics/steady_fsi/config_cantilever.cfg
+multiphysics/steady_fsi/config_channel.cfg
+multiphysics/steady_fsi/config_fsi_steady.cfg
+multiphysics/steady_fsi/mesh_cantilever.su2
+multiphysics/steady_fsi/mesh_channel.su2
+multiphysics/unsteady_cht/cht_2d_3cylinders.cfg
+multiphysics/unsteady_cht/flow_cylinder.cfg
+multiphysics/unsteady_cht/mesh_cht_3cyl.su2
+multiphysics/unsteady_cht/solid_cylinder1.cfg
+multiphysics/unsteady_cht/solid_cylinder2.cfg
+multiphysics/unsteady_cht/solid_cylinder3.cfg
+multiphysics/unsteady_fsi_python/Ma01/fluid.cfg
+multiphysics/unsteady_fsi_python/Ma01/fsi.cfg
+multiphysics/unsteady_fsi_python/Ma01/modal.f06
+multiphysics/unsteady_fsi_python/Ma01/modal.pch
+multiphysics/unsteady_fsi_python/Ma01/solid.cfg
+multiphysics/unsteady_fsi_python/Ma02/fluid.cfg
+multiphysics/unsteady_fsi_python/Ma02/fsi.cfg
+multiphysics/unsteady_fsi_python/Ma02/modal.f06
+multiphysics/unsteady_fsi_python/Ma02/modal.pch
+multiphysics/unsteady_fsi_python/Ma02/solid.cfg
+multiphysics/unsteady_fsi_python/Ma03/fluid.cfg
+multiphysics/unsteady_fsi_python/Ma03/fsi.cfg
+multiphysics/unsteady_fsi_python/Ma03/modal.f06
+multiphysics/unsteady_fsi_python/Ma03/modal.pch
+multiphysics/unsteady_fsi_python/Ma03/solid.cfg
+multiphysics/unsteady_fsi_python/Ma0357/fluid.cfg
+multiphysics/unsteady_fsi_python/Ma0357/fsi.cfg
+multiphysics/unsteady_fsi_python/Ma0357/modal.f06
+multiphysics/unsteady_fsi_python/Ma0357/modal.pch
+multiphysics/unsteady_fsi_python/Ma0357/solid.cfg
+multiphysics/unsteady_fsi_python/Ma0364/fluid.cfg
+multiphysics/unsteady_fsi_python/Ma0364/fsi.cfg
+multiphysics/unsteady_fsi_python/Ma0364/modal.f06
+multiphysics/unsteady_fsi_python/Ma0364/modal.pch
+multiphysics/unsteady_fsi_python/Ma0364/solid.cfg
+multiphysics/unsteady_fsi_python/Main_compare.m
+multiphysics/unsteady_fsi_python/ObtainSU2Results.m
+multiphysics/unsteady_fsi_python/ObtainTheoResults.m
+multiphysics/unsteady_fsi_python/airfoil.su2
+multiphysics/unsteady_fsi_python/readHistoryModal.m
+multiphysics/unsteady_fsi_python/readHistoryNodal.m
+multiphysics/unsteady_fsi_python/readPunchShapes.m
+structural_mechanics/cantilever/config_dynamic.cfg
+structural_mechanics/cantilever/config_linear.cfg
+structural_mechanics/cantilever/config_nonlinear.cfg
+structural_mechanics/cantilever/config_nonlinear_incremental.cfg
+structural_mechanics/cantilever/config_nonlinear_multimaterial.cfg
+structural_mechanics/cantilever/element_properties.dat
+structural_mechanics/cantilever/mesh_cantilever.su2
+```
